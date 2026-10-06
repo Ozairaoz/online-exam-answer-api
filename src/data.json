@@ -1,0 +1,28 @@
+{
+  "answers": [
+    {
+      "id": "1791263662762",
+      "examId": "EXAM1",
+      "studentId": "S101",
+      "questionId": "Q1",
+      "answer": "A",
+      "timeSpent": 10
+    },
+    {
+      "id": "1791263662767",
+      "examId": "EXAM1",
+      "studentId": "S102",
+      "questionId": "Q2",
+      "answer": "B",
+      "timeSpent": 20
+    },
+    {
+      "id": "1791263662774",
+      "examId": "EXAM2",
+      "studentId": "S101",
+      "questionId": "Q3",
+      "answer": "C",
+      "timeSpent": 30
+    }
+  ]
+}
