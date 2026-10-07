@@ -35,9 +35,11 @@ Open the URL shown in the terminal (usually `http://localhost:5173`).
 
 ## Deploy on Render (static site)
 
+Use **Static Site**, not Web Service.
+
 1. **New → Static Site** → connect this GitHub repo.
-2. **Root Directory:** `frontend`
-3. **Build Command:** `npm install && npm run build`
+2. **Root Directory:** `frontend` ← required (empty root causes “no package.json” errors)
+3. **Build Command:** `npm install && npm run build` ← do **not** use `yarn npm run build`
 4. **Publish Directory:** `dist`
 5. **Environment variable:** `VITE_API_URL` = your backend URL (e.g. `https://your-api.onrender.com`, no trailing slash).
 6. On the **backend** service, set `CORS_ORIGIN` to your frontend URL (e.g. `https://your-frontend.onrender.com`) and redeploy.
