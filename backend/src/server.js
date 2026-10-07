@@ -26,12 +26,33 @@ app.get("/", (req, res) => {
 
 app.post("/exam/:examId/answer", (req, res) => {
     try {
-        const examId = req.params.examId;
+        const examId =
+            typeof req.params.examId === "string"
+                ? req.params.examId.trim()
+                : "";
         const { studentId, questionId, answer, timeSpent } = req.body;
 
-        if (!examId || !studentId || !questionId) {
+        if (!examId) {
             return res.status(400).json({
-                error: "examId, studentId and questionId are required"
+                error: "examId is required"
+            });
+        }
+
+        if (
+            typeof studentId !== "string" ||
+            studentId.trim() === ""
+        ) {
+            return res.status(400).json({
+                error: "studentId must be a non-empty string"
+            });
+        }
+
+        if (
+            typeof questionId !== "string" ||
+            questionId.trim() === ""
+        ) {
+            return res.status(400).json({
+                error: "questionId must be a non-empty string"
             });
         }
 
@@ -45,6 +66,8 @@ app.post("/exam/:examId/answer", (req, res) => {
         }
 
         if (
+            timeSpent === undefined ||
+            timeSpent === null ||
             !Number.isInteger(timeSpent) ||
             timeSpent < 0
         ) {
@@ -53,17 +76,27 @@ app.post("/exam/:examId/answer", (req, res) => {
             });
         }
 
+        const trimmedStudentId = studentId.trim();
+        const trimmedQuestionId = questionId.trim();
+        const trimmedAnswer = answer.trim();
+
         const data = readData();
+
+        if (!Array.isArray(data.answers)) {
+            return res.status(500).json({
+                error: "Database request failed"
+            });
+        }
 
         const existingAnswer = data.answers.find(
             (item) =>
                 item.examId === examId &&
-                item.studentId === studentId &&
-                item.questionId === questionId
+                item.studentId === trimmedStudentId &&
+                item.questionId === trimmedQuestionId
         );
 
         if (existingAnswer) {
-            existingAnswer.answer = answer;
+            existingAnswer.answer = trimmedAnswer;
             existingAnswer.timeSpent = timeSpent;
 
             writeData(data);
@@ -74,9 +107,9 @@ app.post("/exam/:examId/answer", (req, res) => {
         const newAnswer = {
             id: Date.now().toString(),
             examId,
-            studentId,
-            questionId,
-            answer,
+            studentId: trimmedStudentId,
+            questionId: trimmedQuestionId,
+            answer: trimmedAnswer,
             timeSpent
         };
 
@@ -97,15 +130,34 @@ app.post("/exam/:examId/answer", (req, res) => {
 
 app.get("/exam/:examId/answers/:studentId", (req, res) => {
     try {
-        const { examId, studentId } = req.params;
+        const examId =
+            typeof req.params.examId === "string"
+                ? req.params.examId.trim()
+                : "";
+        const studentId =
+            typeof req.params.studentId === "string"
+                ? req.params.studentId.trim()
+                : "";
 
-        if (!examId || !studentId) {
+        if (!examId) {
             return res.status(400).json({
-                error: "examId and studentId are required"
+                error: "examId is required"
+            });
+        }
+
+        if (!studentId) {
+            return res.status(400).json({
+                error: "studentId is required"
             });
         }
 
         const data = readData();
+
+        if (!Array.isArray(data.answers)) {
+            return res.status(500).json({
+                error: "Database request failed"
+            });
+        }
 
         const answers = data.answers
             .filter(
@@ -130,6 +182,19 @@ app.get("/exam/:examId/answers/:studentId", (req, res) => {
             error: "Database request failed"
         });
     }
+});
+
+app.use((err, req, res, next) => {
+    if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+        return res.status(400).json({
+            error: "Request body must be valid JSON"
+        });
+    }
+
+    console.error(err);
+    return res.status(500).json({
+        error: "Database request failed"
+    });
 });
 
 if (require.main === module) {
