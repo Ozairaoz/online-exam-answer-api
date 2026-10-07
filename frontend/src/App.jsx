@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiUrl } from './api'
 import './App.css'
 
 const initialForm = {
@@ -35,7 +36,7 @@ function App() {
 
     try {
       const res = await fetch(
-        `/exam/${encodeURIComponent(form.examId)}/answer`,
+        apiUrl(`/exam/${encodeURIComponent(form.examId)}/answer`),
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -73,7 +74,9 @@ function App() {
 
     try {
       const res = await fetch(
-        `/exam/${encodeURIComponent(form.examId)}/answers/${encodeURIComponent(form.studentId.trim())}`
+        apiUrl(
+          `/exam/${encodeURIComponent(form.examId)}/answers/${encodeURIComponent(form.studentId.trim())}`
+        )
       )
 
       const data = await res.json()
@@ -198,8 +201,9 @@ function App() {
       </section>
 
       <p className="hint">
-        Run the API on port 3000 and this app with <code>npm run dev</code>.
-        Vite proxies <code>/exam</code> requests to the backend.
+        Local dev: run the API on port 3000 and <code>npm run dev</code> (Vite
+        proxies <code>/exam</code>). On Render, set <code>VITE_API_URL</code> to
+        your backend URL.
       </p>
     </div>
   )

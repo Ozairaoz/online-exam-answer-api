@@ -1,0 +1,30 @@
+# Optional: import this blueprint on Render (Dashboard → Blueprints)
+# Or create a Static Site manually using the settings below.
+
+services:
+  - type: web
+    name: online-exam-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # After frontend is live, set to your static site URL (comma-separated for multiple)
+      - key: CORS_ORIGIN
+        sync: false
+
+staticSites:
+  - name: online-exam-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Your Render backend URL, no trailing slash
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
