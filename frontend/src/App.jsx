@@ -57,7 +57,7 @@ function App() {
 
       setStatus(
         res.status === 201
-          ? 'Answer saved successfully.'
+          ? 'Answer submitted successfully.'
           : 'Answer updated successfully.'
       )
     } catch (err) {
